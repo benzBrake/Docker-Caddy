@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  caddy:
+    image: benzbrake/caddy
+    container_name: caddy
+    restart: always
+    volumes:
+      - /data/caddy:/data/caddy
+    ports:
+      - "80:80"
+      - "443:443"
