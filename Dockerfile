@@ -7,7 +7,7 @@ ARG CADDY_ACCOUNT_ID=""
 ARG CADDY_API_KEY=""
 ADD html /html
 RUN apk add --update --no-cache openssl curl && \
-    curl -fsSL "https://caddyserver.com/download/linux/${CADDY_ARCH}?plugins=${CADDY_PLUGIN}&license=${CADDY_LICENSE}&telemetry=off" -u "${CADDY_ACCOUNT_ID}:${CADDY_API_KEY}" -o "/tmp/caddy.tgz" && \
+    curl -L "https://caddyserver.com/download/linux/${CADDY_ARCH}?plugins=${CADDY_PLUGIN}&license=${CADDY_LICENSE}&telemetry=off" -u "${CADDY_ACCOUNT_ID}:${CADDY_API_KEY}" -o "/tmp/caddy.tgz" && \
     cd /tmp && \
     tar xvf caddy.tgz && \
     mv caddy /bin/caddy && \
