@@ -44,7 +44,7 @@ docker build --build-arg \
 ## 4.Custom plugins
 ```
 docker build --build-arg \
-    "CADDY_PLUGIN=http.cache,http.filebrowser,http.filter,http.ratelimit"
+    "CADDY_PLUGIN=http.cache,http.filebrowser,http.filter,http.ratelimit" \
     github.com/benzbrake/Docker-Caddy.git
 ```
 
