@@ -12,20 +12,20 @@ Plugins can be configured via the `CADDY_PLUGIN` build arg.
  - This version of Anti-996 License is drafted by [Katt Gu, J.D, University of Illinois, College of Law](https://scholar.google.com.sg/citations?user=PTcpQwcAAAAJ&hl=en&oi=ao); advised by [Suji Yan](https://www.linkedin.com/in/tedkoyan/), CEO of [Dimension](https://www.dimension.im).  
  - This draft is adapted from the MIT license. For more detailed explanation, please see [Wiki](https://github.com/kattgu7/996-License-Draft/wiki). This license is designed to be compatible with all major open source licenses.  
  - For law professionals or anyone who is willing to contribute to future version directly, please go to [Anti-996-License-1.0](https://github.com/kattgu7/996-License-Draft). Thank you.
- 
+
 
 # Usage
 ## 1.Run without any settings.
 ```
-$ docker run -d -p 2015:2015 benzbrake/caddy
+$ docker run -d -p 80:80 benzbrake/caddy
 ```
-Point your browser to `http://127.0.0.1:2015`.
+Point your browser to `http://127.0.0.1:80`.
 ## 2.Saving Certificates
 Save certificates on host machine to prevent regeneration every time container starts.
 ```
-$ docker run -d -v /data/caddy:/data/caddy -v /etc/Caddyfile:/data/caddy/caddy.conf -p 80:80 -p 443:443 benzbrake/caddy
+$ docker run -d -v $HOME/.caddy:/root/.caddy -v /etc/Caddyfile:/data/caddy/caddy.conf -p 80:80 -p 443:443 benzbrake/caddy
 ```
-Here, `/data/caddy` is the location inside the container where caddy will save certificates.
+Here, `$HOME/.caddy` is the location inside the container where caddy will save certificates.
 
 Additionally, you can use an environment variable to define the exact location caddy should save generated certificates:
 ```
