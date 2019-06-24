@@ -1,5 +1,5 @@
 #!/bin/sh
-mkdir -pv ${CADDYPATH:-/data/caddy}/log ${CADDYPATH:-/data/caddy}/vhosts
+mkdir -pv ${CADDYPATH:-/data/caddy}/logs ${CADDYPATH:-/data/caddy}/vhosts
 if [[ ! -f ${CADDYPATH:-/data/caddy}/caddy.conf ]]; then
     cat > ${CADDYPATH:-/data/caddy}/caddy.conf <<EOF
 :80 {
@@ -7,7 +7,7 @@ if [[ ! -f ${CADDYPATH:-/data/caddy}/caddy.conf ]]; then
         timeouts 0
         root ${CADDYPATH:-/data/caddy}/html
         index index.html index.htm default.html default.htm index.php
-        log ${CADDYPATH:-/data/caddy}/log/default.log
+        log ${CADDYPATH:-/data/caddy}/logs/default.log
 }
 import vhosts/*.conf
 EOF
