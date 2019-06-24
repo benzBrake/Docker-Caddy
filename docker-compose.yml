@@ -10,3 +10,4 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    command: -conf=/data/caddy.conf" --log=stdout --agree=true

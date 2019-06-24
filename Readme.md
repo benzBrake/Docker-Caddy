@@ -23,13 +23,13 @@ Point your browser to `http://127.0.0.1:80`.
 ## 2.Saving Certificates
 Save certificates on host machine to prevent regeneration every time container starts.
 ```
-$ docker run -d -v $HOME/.caddy:/root/.caddy -v /etc/Caddyfile:/data/caddy/caddy.conf -p 80:80 -p 443:443 benzbrake/caddy
+$ docker run -d -v /data/caddy:/data/caddy -v /etc/Caddyfile:/etc/Caddyfile -p 80:80 -p 443:443 benzbrake/caddy
 ```
 Here, `$HOME/.caddy` is the location inside the container where caddy will save certificates.
 
 Additionally, you can use an environment variable to define the exact location caddy should save generated certificates:
 ```
-$ docker run -d -e "CADDYPATH=/etc/caddycerts" -v $HOME/.caddy:/etc/caddycerts -p 80:80 -p 443:443 benzbrake/caddy
+$ docker run -d -e "CADDYPATH=/etc/caddy" -v /data/caddy:/etc/caddy -p 80:80 -p 443:443 benzbrake/caddy
 ```
 Above, we utilize the CADDYPATH environment variable to define a different location inside the container for certificates to be stored. This is probably the safest option as it ensures any future docker image changes don't interfere with your ability to save certificates!
 ## 3.Custom license
@@ -44,7 +44,7 @@ docker build --build-arg \
 ## 4.Custom plugins
 ```
 docker build --build-arg \
-    "CADDY_PLUGIN=http.cache,http.filebrowser,http.filter,http.ratelimit" \
+    "CADDY_PLUGIN=http.cache,http.filter,http.nobots,http.ratelimit,http.realip,tls.dns.cloudflare" \
     github.com/benzbrake/Docker-Caddy.git
 ```
 

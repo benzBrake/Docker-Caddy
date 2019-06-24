@@ -1,15 +1,23 @@
 #!/bin/sh
-mkdir -pv ${CADDYPATH:-/data/caddy}/logs ${CADDYPATH:-/data/caddy}/vhosts
-if [[ ! -f ${CADDYPATH:-/data/caddy}/caddy.conf ]]; then
-    cat > ${CADDYPATH:-/data/caddy}/caddy.conf <<EOF
+# Set default value of variable CADDYPATH
+[[ -z ${CADDYPATH} ]] && export CADDYPATH=/data/caddy
+[[ -z ${TZ} ]] && export TZ=Asia/Shanghai
+# Set timezone
+ln -sf /usr/share/zoneinfo/$TZ /etc/localtime
+# Create necessary directories
+mkdir -pv ${CADDYPATH}/logs ${CADDYPATH}/vhosts
+# Create default Caddyfile
+if [[ ! -f /etc/Caddyfile ]]; then
+    cat > /etc/Caddyfile <<EOF
 :80 {
         gzip
         timeouts 0
-        root ${CADDYPATH:-/data/caddy}/html
+        root /html
         index index.html index.htm default.html default.htm index.php
-        log ${CADDYPATH:-/data/caddy}/logs/default.log
+        log ${CADDYPATH}/logs/default.log
 }
 import vhosts/*.conf
 EOF
 fi
-exec caddy -conf=${CADDYPATH:-/data/caddy}/caddy.conf --log=stdout --agree=true
+# Run caddy
+caddy $@
