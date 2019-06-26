@@ -1,5 +1,5 @@
 # Docker-Caddy
-A Docker image for Caddy. This image includes [cache](https://caddyserver.com/docs/http.cache "cache"), [filebrowser](https://caddyserver.com/docs/http.filebrowser "filebrowser"), [filter](https://caddyserver.com/docs/http.filter "filter"), and [ratelimit](https://caddyserver.com/docs/http.ratelimit "ratelimit") plugins.
+A Docker image for Caddy. This image includes `http.cache,http.filter,http.nobots,http.ratelimit,http.realip,tls.dns.cloudflare` plugins.
 
 Plugins can be configured via the `CADDY_PLUGIN` build arg.
 
