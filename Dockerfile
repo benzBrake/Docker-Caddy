@@ -9,7 +9,7 @@ ARG CADDY_ACCOUNT_ID
 ARG CADDY_API_KEY
 
 # PHP Build ARGS
-ARG PHP_PACKAGES="php7-mysqli,php7-pdo_mysql,php7-mbstring,php7-json,php7-zlib,php7-gd,php7-intl,php7-session,php7-memcached"
+ARG PHP_PACKAGES="php7-mysqli,php7-pdo_mysql,php7-mbstring,php7-json,php7-zlib,php7-gd,php7-intl,php7-session,php7-memcached,php7-ctype"
 # Runtime ENV
 ENV CADDYPATH=/data/caddy TZ=Asia/Shanghai
 
