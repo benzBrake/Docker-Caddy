@@ -44,10 +44,17 @@ docker build --build-arg \
 ## 4.Custom plugins
 ```
 docker build --build-arg \
-    "CADDY_PLUGIN=http.cache,http.filter,http.nobots,http.ratelimit,http.realip,tls.dns.cloudflare" \
+	"CADDY_PLUGIN=http.cache,http.filter,http.nobots,http.ratelimit,http.realip" \
     github.com/benzbrake/Docker-Caddy.git
 ```
 
+## 5.php
+
+`:php` variant of this image bundles PHP-FPM alongside essential php extensions.
+
+
+
 # Feedback
+
 If you have any problems with or questions about this image, please contact me through a GitHub [issue](https://github.com/benzBrake/Docker-Caddy/issues "issue").
 
