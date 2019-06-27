@@ -14,7 +14,9 @@ ARG PHP_PACKAGES="php7-mysqli,php7-pdo_mysql,php7-mbstring,php7-json,php7-zlib,p
 ENV CADDYPATH=/data/caddy TZ=Asia/Shanghai
 
 ADD html /html
-ADD entrypoint.sh /bin/
+ADD entrypoint.sh /bin
+# trust this project public key to trust the packages.
+ADD https://dl.bintray.com/php-alpine/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
 
 # Install Caddy
 RUN apk add --update --no-cache openssl curl && \
@@ -23,19 +25,12 @@ RUN apk add --update --no-cache openssl curl && \
     tar xvf caddy.tgz && \
     mv caddy /bin/caddy && \
     chmod +x /bin/caddy && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/* && \
-    chmod +x /bin/entrypoint.sh
-
-# trust this project public key to trust the packages.
-ADD https://dl.bintray.com/php-alpine/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
-
-# Install PHP-FPM
-RUN echo "@php https://dl.bintray.com/php-alpine/v3.9/php-7.3" >> /etc/apk/repositories && \
+    chmod +x /bin/entrypoint.sh && \
+    echo "@php https://dl.bintray.com/php-alpine/v3.9/php-7.3" >> /etc/apk/repositories && \
     apk add --update --no-cache php7-cli@php && \
     apk add --update --no-cache php7-fpm@php && \
-    for name in $(echo ${PACKAGES} | sed "s#,#\n#g"); do apk add --update --no-cache ${name}@php ; done && \
-    rm -rf /var/cache/apk/*
+    for name in $(echo ${PHP_PACKAGES} | sed "s#,#\n#g"); do apk add --update --no-cache ${name}@php ; done && \
+    rm -rf /var/cache/apk/* /tmp/*
 
 CMD ["-conf=/etc/Caddyfile", "--log=stdout", "--agree=true"]
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/bin/entrypoint.sh"]

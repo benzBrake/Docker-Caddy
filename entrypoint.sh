@@ -10,14 +10,17 @@ mkdir -pv ${CADDYPATH}/logs ${CADDYPATH}/vhosts
 if [[ ! -f /etc/Caddyfile ]]; then
     cat > /etc/Caddyfile <<EOF
 :80 {
-        gzip
-        timeouts 0
-        root /html
-        index index.html index.htm default.html default.htm index.php
-        log ${CADDYPATH}/logs/default.log
+    gzip
+    timeouts 0
+    root /html
+    index index.html index.htm default.html default.htm index.php
+    fastcgi / 127.0.0.1:9000 php
+    log ${CADDYPATH}/logs/default.log
 }
 import vhosts/*.conf
 EOF
 fi
+# Run php
+/usr/sbin/php-fpm7
 # Run caddy
-caddy $@
+/bin/caddy $@
