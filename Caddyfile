@@ -1,11 +1,11 @@
 :80 {
         gzip
         timeouts 0
-        root /data/caddy/html
+        root /www/wwwroot/default
         index index.html index.htm default.html default.htm index.php
-        log /data/caddy/logs/default.log
+        log /www/wwwlogs/default.log
         errors {
             404 404.html
         }
 }
-import vhosts/*.conf
+import /www/config/*
