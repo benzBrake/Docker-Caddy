@@ -1,13 +1,15 @@
 version: '3'
 
 services:
-  caddy:
-    image: benzbrake/caddy
-    container_name: caddy
+  caddyphp:
+    image: benzbrake/caddy:php
+    container_name: caddyphp
     restart: always
     volumes:
-      - /data/caddy:/data/caddy
+      - /data/caddypath:/root/.caddy
+      - /data/wwwroot/myweb:/www/wwwroot/myweb
+      - /data/wwwlogs:/www/wwwlogs
+      - /data/wwwconf:/www/config
     ports:
       - "80:80"
       - "443:443"
-    command: -conf=/data/caddy/caddy.conf" --log=stdout --agree=true

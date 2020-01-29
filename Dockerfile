@@ -1,36 +1,70 @@
-FROM benzbrake/alpine:3.9
-MAINTAINER Ryan Lieu <github-benzBrake@woai.ru>
+#
+# Builder 
+# Copy from Abiosoft/caddy-docker
+#
+FROM benzbrake/caddy:builder as builder
 
-# Cadddy Build ARGS
-ARG CADDY_ARCH="amd64"
-ARG CADDY_PLUGIN="http.cache,http.filter,http.nobots,http.ratelimit,http.realip,tls.dns.cloudflare"
-ARG CADDY_LICENSE="personal"
-ARG CADDY_ACCOUNT_ID
-ARG CADDY_API_KEY
+ARG version="1.0.3"
+ARG caddy_plugins="git,cors,realip,filter,expires,cache,cloudflare"
+ARG enable_telemetry="false"
 
 # PHP Build ARGS
-ARG PHP_PACKAGES="php7-mysqli,php7-pdo_mysql,php7-mbstring,php7-json,php7-zlib,php7-gd,php7-intl,php7-session,php7-memcached,php7-ctype"
-# Runtime ENV
-ENV CADDYPATH=/data/caddy TZ=Asia/Shanghai
+ARG php_plugins="php7-mysqli,php7-pdo_mysql,php7-mbstring,php7-json,php7-zlib,php7-gd,php7-intl,php7-session,php7-memcached,php7-ctype"
 
-ADD html /html
-ADD entrypoint.sh /bin
+# process wrapper
+RUN go get -v github.com/abiosoft/parent
+
+RUN VERSION=${version} PLUGINS=${caddy_plugins} ENABLE_TELEMETRY=${enable_telemetry} /bin/sh /usr/bin/builder.sh
+
+#
+# Final stage
+#
+FROM benzbrake/alpine
+LABEL maintainer "Ryan Lieu <github-benzBrake@woai.ru>"
+
+ARG version="1.0.3"
+LABEL caddy_version="$version"
+
+# Let's Encrypt Agreement
+ENV ACME_AGREE="false"
+
+# Telemetry Stats
+ENV ENABLE_TELEMETRY="$enable_telemetry"
+
+# PHP PLUGINS
+ENV PHP_PLUGINS="$php_plugins"
+
+RUN mkdir -pv /www/wwwroot/default
+COPY html/index.html /www/wwwroot/default/
+COPY html/404.html /www/wwwroot/default/
+COPY html/phpinfo.php /www/wwwroot/default/
+COPY Caddyfile /etc/
+
 # trust this project public key to trust the packages.
 ADD https://dl.bintray.com/php-alpine/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
 
 # Install Caddy
-RUN apk add --update --no-cache openssl curl && \
-    curl -L "https://caddyserver.com/download/linux/${CADDY_ARCH}?plugins=${CADDY_PLUGIN}&license=${CADDY_LICENSE}&telemetry=off" -u "${CADDY_ACCOUNT_ID}:${CADDY_API_KEY}" -o "/tmp/caddy.tgz" && \
-    cd /tmp && \
-    tar xvf caddy.tgz && \
-    mv caddy /bin/caddy && \
-    chmod +x /bin/caddy && \
-    chmod +x /bin/entrypoint.sh && \
+COPY --from=builder /install/caddy /usr/bin/caddy
+
+# Install process wrapper
+COPY --from=builder /go/bin/parent /bin/parent
+
+# Install PHP
+RUN apk add --update --no-cache openssl curl git&& \
     echo "@php https://dl.bintray.com/php-alpine/v3.9/php-7.3" >> /etc/apk/repositories && \
     apk add --update --no-cache php7-cli@php && \
     apk add --update --no-cache php7-fpm@php && \
     for name in $(echo ${PHP_PACKAGES} | sed "s#,#\n#g"); do apk add --update --no-cache ${name}@php ; done && \
     rm -rf /var/cache/apk/* /tmp/*
 
-CMD ["-conf=/etc/Caddyfile", "--log=stdout", "--agree=true"]
+# validate install
+RUN /usr/bin/caddy -version
+RUN /usr/bin/caddy -plugins
+RUN /usr/bin/php -v
+
+EXPOSE 80 443
+VOLUME /root/.caddy /www
+WORKDIR /www
+
 ENTRYPOINT ["/bin/entrypoint.sh"]
+CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=$ACME_AGREE"]
