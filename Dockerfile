@@ -26,7 +26,7 @@ ARG version="1.0.3"
 LABEL caddy_version="$version"
 
 # Let's Encrypt Agreement
-ENV ACME_AGREE="false"
+ENV ACME_AGREE="true"
 
 # Telemetry Stats
 ENV ENABLE_TELEMETRY="$enable_telemetry"
