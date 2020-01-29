@@ -39,6 +39,7 @@ COPY html/index.html /www/wwwroot/default/
 COPY html/404.html /www/wwwroot/default/
 COPY html/phpinfo.php /www/wwwroot/default/
 COPY Caddyfile /etc/
+COPY entrypoint.sh /bin/
 
 # trust this project public key to trust the packages.
 ADD https://dl.bintray.com/php-alpine/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
@@ -55,6 +56,7 @@ RUN apk add --update --no-cache openssl curl git&& \
     apk add --update --no-cache php7-cli@php && \
     apk add --update --no-cache php7-fpm@php && \
     for name in $(echo ${PHP_PACKAGES} | sed "s#,#\n#g"); do apk add --update --no-cache ${name}@php ; done && \
+    chmod +x /bin/entrypoint.sh && \
     rm -rf /var/cache/apk/* /tmp/*
 
 # validate install
