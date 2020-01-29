@@ -55,7 +55,8 @@ RUN apk add --update --no-cache openssl curl git&& \
     echo "@php https://dl.bintray.com/php-alpine/v3.9/php-7.3" >> /etc/apk/repositories && \
     apk add --update --no-cache php7-cli@php && \
     apk add --update --no-cache php7-fpm@php && \
-    for name in $(echo ${PHP_PACKAGES} | sed "s#,#\n#g"); do apk add --update --no-cache ${name}@php ; done && \
+    PHP_PLUGINS=$(echo $PHP_PLUGINS | sed 's#,# #') && \
+    for name in $(echo ${PHP_PLUGINS} | sed "s#,#\n#g"); do apk add --update --no-cache ${name}@php ; done && \
     chmod +x /bin/entrypoint.sh && \
     rm -rf /var/cache/apk/* /tmp/*
 
