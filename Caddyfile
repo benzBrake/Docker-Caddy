@@ -3,7 +3,7 @@
         timeouts 0
         root /www/wwwroot/default
         index index.html index.htm default.html default.htm index.php
-        log /www/wwwlogs/default.log
+        stdout
         errors {
             404 404.html
         }
