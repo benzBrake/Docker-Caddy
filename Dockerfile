@@ -4,7 +4,7 @@
 #
 FROM benzbrake/caddy:builder as builder
 
-ARG version="1.0.3"
+ARG version="1.0.4"
 ARG caddy_plugins="git,cors,realip,filter,expires,cache,cloudflare"
 ARG enable_telemetry="false"
 
