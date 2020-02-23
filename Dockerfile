@@ -4,7 +4,7 @@
 #
 FROM benzbrake/caddy:builder as builder
 
-ARG version="1.0.3"
+ARG version="1.0.4"
 ARG caddy_plugins="git,cors,realip,filter,expires,cache,cloudflare"
 ARG enable_telemetry="false"
 
@@ -19,7 +19,7 @@ RUN VERSION=${version} PLUGINS=${caddy_plugins} ENABLE_TELEMETRY=${enable_teleme
 FROM benzbrake/alpine
 LABEL maintainer "Ryan Lieu <github-benzBrake@woai.ru>"
 
-ARG version="1.0.3"
+ARG version="1.0.4"
 LABEL caddy_version="$version"
 
 # Let's Encrypt Agreement
