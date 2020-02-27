@@ -37,9 +37,6 @@ COPY html/phpinfo.php /www/wwwroot/default/
 COPY Caddyfile /etc/
 COPY entrypoint.sh /bin/
 
-# trust this project public key to trust the packages.
-ADD https://dl.bintray.com/php-alpine/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
-
 # Install Caddy
 COPY --from=builder /install/caddy /usr/bin/caddy
 
@@ -49,10 +46,9 @@ COPY --from=builder /go/bin/parent /bin/parent
 # Install PHP
 RUN set -x && env && \
     apk add --update --no-cache openssl curl git&& \
-    echo "@php https://dl.bintray.com/php-alpine/v3.9/php-7.3" >> /etc/apk/repositories && \
-    apk add --update --no-cache php7-cli@php && \
-    apk add --update --no-cache php7-fpm@php && \
-    for name in $(echo ${PHP_PLUGINS} | sed "s#,#\n#g"); do apk add --update --no-cache ${name}@php ; done && \
+    apk add --update --no-cache php7-cli && \
+    apk add --update --no-cache php7-fpm && \
+    for name in $(echo ${PHP_PLUGINS} | sed "s#,#\n#g"); do apk add --update --no-cache ${name} ; done && \
     chmod +x /bin/entrypoint.sh && \
     rm -rf /var/cache/apk/* /tmp/*
 
