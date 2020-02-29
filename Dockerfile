@@ -53,7 +53,7 @@ RUN set -x && env && \
     apk add --update --no-cache openssl curl git&& \
     apk add --update --no-cache php7-cli && \
     apk add --update --no-cache php7-fpm && \
-    for name in $(echo ${PHP_PLUGINS} | sed "s#,#\n#g"); do apk add --update --no-cache ${name} ; done && \
+    for name in $(echo ${php_plugins} | sed "s#,#\n#g"); do apk add --update --no-cache ${name} ; done && \
     chmod +x /bin/entrypoint.sh && \
     rm -rf /var/cache/apk/* /tmp/*
 
