@@ -47,10 +47,16 @@ docker build --build-arg \
 	"CADDY_PLUGIN=http.cache,http.filter,http.nobots,http.ratelimit,http.realip" \
     github.com/benzbrake/Docker-Caddy.git
 ```
-
-## 5.php
+## 6.php
 
 `:php` variant of this image bundles PHP-FPM alongside essential php extensions.
+Default php running user is set to 1000:1000
+
+### add thirdparty php extensions
+Add thirdparty php extensions to php in container. Put your extensions to `/data/php-extensions` and run container like:
+```
+$ docker run -d -v /data/php-extensions:/www/php-extensions -v /data/web:/www/wwwroot -v /data/vhosts:/www/config -p 80:80 -p 443:443 benzbrake/caddy:php
+```
 
 ## 6.Builder
 Builder is copy from [abiosoft/caddy-docker](https://github.com/abiosoft/caddy-docker).
