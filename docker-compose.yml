@@ -10,6 +10,7 @@ services:
       - /data/wwwroot/myweb:/www/wwwroot/myweb
       - /data/wwwlogs:/www/wwwlogs
       - /data/wwwconf:/www/config
+      - /data/php-extensions:/www/php-extensions
     ports:
       - "80:80"
       - "443:443"
