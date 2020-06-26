@@ -6,7 +6,7 @@ IMPORT="github.com/caddyserver/caddy"
 
 # version <1.0.1 needs to use old import path
 new_import=true
-if [ "$(echo $VERSION | cut -c1)" -eq 0 ] 2>/dev/null || [ "$VERSION" = "1.0.0" ]; then
+if [ "$(echo $VERSION | cut -c1)" -eq 0 ] 2>/dev/null || [ "$VERSION" = "1.0.0" ]; then 
     IMPORT="github.com/mholt/caddy" && new_import=false
 fi
 
@@ -54,12 +54,17 @@ dns_plugins() {
 
 plugins() {
     mkdir -p /plugins
-    for plugin in $(echo $PLUGINS | tr "," " "); do \
-        import_package=$(get_package $plugin)
-        $go_mod || go get -v "$import_package" ; # not needed for modules
-        $go_mod && package="main" || package="caddyhttp"
-        printf "package $package\nimport _ \"$import_package\"" > \
-            /plugins/$plugin.go ; \
+    local package="main"
+    $go_mod || package="caddyhttp"
+
+    for plugin in $(echo $PLUGINS | tr "," " "); do
+        local import_package=""
+        while [ -z $import_package ]; do
+            import_package="$(get_package $plugin)"
+        done
+        $go_mod || go get -v "$import_package" # not needed for modules
+        printf "package $package\nimport _ \"$import_package\"\n" > \
+            /plugins/$plugin.go
     done
 }
 
