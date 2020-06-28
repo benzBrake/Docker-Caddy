@@ -1,39 +1,15 @@
-# Mod from abiosoft
-#
-# Builder 
-# Copy from Abiosoft/caddy-docker
-#
-FROM benzbrake/caddy:builder as builder
-
-ARG version="1.0.4"
-ARG caddy_plugins="git,cors,realip,filter,expires,cache,cloudflare"
-ARG enable_telemetry="false"
-
-RUN env
-
-# process wrapper
-RUN go get -v github.com/abiosoft/parent
-
-RUN VERSION=${version} PLUGINS=${caddy_plugins} ENABLE_TELEMETRY=${enable_telemetry} /bin/sh /usr/bin/builder.sh
-
-#
-# Final stage
-#
 FROM benzbrake/alpine
 LABEL maintainer "Ryan Lieu <github-benzBrake@woai.ru>"
 
+# CADDY PLUGINS
+ARG CADDY_PLUGINS="http.git,http.cors,http.realip,http.filter,http.expires,http.cache,tls.dns.cloudflare"
+
 # PHP PLUGINS
-ARG php_plugins="php7-mysqli,php7-pdo_mysql,php7-mbstring,php7-json,php7-zlib,php7-gd,php7-intl,php7-session,php7-memcached,php7-ctype"
+ARG PHP_PLUGINS="php7-mysqli,php7-pdo_mysql,php7-mbstring,php7-json,php7-zlib,php7-gd,php7-intl,php7-session,php7-memcached,php7-ctype"
 
 # PHP user www's GID and UID
 ARG PUID=1000
 ARG PGID=1000
-
-# Let's Encrypt Agreement
-ENV ACME_AGREE="true"
-
-# Telemetry Stats
-ENV ENABLE_TELEMETRY="$enable_telemetry"
 
 RUN mkdir -pv /www/wwwroot/default
 COPY html/index.html /www/wwwroot/default/
@@ -42,18 +18,14 @@ COPY html/phpinfo.php /www/wwwroot/default/
 COPY Caddyfile /etc/
 COPY entrypoint.sh /bin/
 
-# Install Caddy
-COPY --from=builder /install/caddy /usr/bin/caddy
-
-# Install process wrapper
-COPY --from=builder /go/bin/parent /bin/parent
-
-# Install PHP
-RUN set -x && env && \
-    apk add --update --no-cache openssl curl git&& \
+# Install Caddy & PHP
+RUN env && \
+    set -x && \
+    curl --silent --show-error --fail --location --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - "https://caddyserver.com/download/linux/amd64?plugins=${CADDY_PLUGINS}&license=personal&telemetry=off" | tar --no-same-owner -C /usr/bin/ -xz caddy && \
+    apk add --update --no-cache openssl curl git && \
     apk add --update --no-cache php7-cli && \
     apk add --update --no-cache php7-fpm && \
-    for name in $(echo ${php_plugins} | sed "s#,#\n#g"); do apk add --update --no-cache ${name} ; done && \
+    for name in $(echo ${PHP_PLUGINS} | sed "s#,#\n#g"); do apk add --update --no-cache ${name} ; done && \
     chmod +x /bin/entrypoint.sh && \
     rm -rf /var/cache/apk/* /tmp/*
 
@@ -62,6 +34,9 @@ RUN ln -sf /usr/bin/php7 /usr/bin/php
 
 # Symlink php-fpm7 to php-fpm
 RUN ln -sf /usr/bin/php-fpm7 /usr/bin/php-fpm
+
+# Installer Composer5
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 # Add a PHP www-user instead of nobody
 RUN addgroup -g ${PGID} www-user && \
@@ -83,4 +58,4 @@ VOLUME /root/.caddy /www
 WORKDIR /www
 
 ENTRYPOINT ["/bin/entrypoint.sh"]
-CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=$ACME_AGREE"]
+CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=true"]
