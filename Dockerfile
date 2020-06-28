@@ -1,58 +1,36 @@
-#
-# Builder 
-# Copy from Abiosoft/caddy-docker
-#
-FROM benzbrake/caddy:builder as builder
-
-ARG version="1.0.4"
-ARG caddy_plugins="git,cors,realip,filter,expires,cache,cloudflare"
-ARG enable_telemetry="false"
-
-# process wrapper
-RUN go get -v github.com/abiosoft/parent
-
-RUN VERSION=${version} PLUGINS=${caddy_plugins} ENABLE_TELEMETRY=${enable_telemetry} /bin/sh /usr/bin/builder.sh
-
-#
-# Final stage
-#
 FROM benzbrake/alpine
 LABEL maintainer "Ryan Lieu <github-benzBrake@woai.ru>"
 
-ARG version="1.0.4"
-LABEL caddy_version="$version"
+# CADDY PLUGINS
+ARG CADDY_PLUGINS="git,cors,realip,filter,expires,cache,cloudflare"
+ARG TELEMETRY="off"
 
-# Let's Encrypt Agreement
-ENV ACME_AGREE="false"
-
-# Telemetry Stats
-ENV ENABLE_TELEMETRY="$enable_telemetry"
-
-# Caddy PATH
-ENV CADDYPATH=/data/caddy
-
-RUN mkdir -pv /www/wwwroot/default
-COPY html/index.html /www/wwwroot/default/
-COPY html/404.html /www/wwwroot/default/
-ADD Caddyfile /etc/
-
-RUN apk add --update --no-cache openssl curl git && \
-	mkdir -pv /www/{config,wwwlogs} &&\
+# Install Caddy & PHP
+RUN env && \
+	set -x && \
+	curl --silent --show-error --fail --location --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - "https://caddyserver.com/download/linux/amd64?plugins=${CADDY_PLUGINS}&license=personal&telemetry=${TELEMETRY}" | tar --no-same-owner -C /usr/bin/ -xz caddy && \
+	chmod +x /bin/entrypoint.sh && \
 	rm -rf /var/cache/apk/* /tmp/*
 
-# install caddy
-COPY --from=builder /install/caddy /usr/bin/caddy
-
-# install process wrapper
-COPY --from=builder /go/bin/parent /bin/parent
+# Configure 
+RUN mkdir -pv /www/wwwroot/default /www/wwwlogs/
+COPY html/index.html /www/wwwroot/default/
+COPY html/404.html /www/wwwroot/default/
+COPY html/phpinfo.php /www/wwwroot/default/
+COPY Caddyfile /etc/
+COPY entrypoint.sh /bin/
 
 # validate install
 RUN /usr/bin/caddy -version
 RUN /usr/bin/caddy -plugins
 
+# Let's Encrypt Agreement
+ENV ACME_AGREE="false"
+
+# Ports, volumes, workdir
 EXPOSE 80 443 2015
 VOLUME /root/.caddy /www
 WORKDIR /www
 
-ENTRYPOINT ["/bin/parent", "caddy"]
-CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=$ACME_AGREE"]
+ENTRYPOINT ["/usr/bin/caddy"]
+CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=true"]
