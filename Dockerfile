@@ -1,15 +1,16 @@
+FROM golang:1.14-alpine as builder
+
+ARG VERSION=2.1.0
+ARG CADDY_PLUGINS=""
+
+ADD builder.sh /
+RUN chmod +x /builder.sh && /builder.sh
+
 FROM benzbrake/alpine
 LABEL maintainer "Ryan Lieu <github-benzBrake@woai.ru>"
 
-# CADDY PLUGINS
-ARG CADDY_PLUGINS="http.git,http.cors,http.realip,http.filter,http.expires,http.cache,tls.dns.cloudflare"
-ARG TELEMETRY="off"
-
-# Install Caddy & PHP
-RUN env && \
-	set -x && \
-	curl --silent --show-error --fail --location --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - "https://caddyserver.com/download/linux/amd64?plugins=${CADDY_PLUGINS}&license=personal&telemetry=${TELEMETRY}" | tar --no-same-owner -C /usr/bin/ -xz caddy && \
-	rm -rf /var/cache/apk/* /tmp/*
+# Install Caddy
+COPY --from=builder /caddy /usr/bin/caddy
 
 # Configure 
 RUN mkdir -pv /www/wwwroot/default /www/wwwlogs/
@@ -18,11 +19,7 @@ COPY html/404.html /www/wwwroot/default/
 COPY Caddyfile /etc/
 
 # validate install
-RUN /usr/bin/caddy -version
-RUN /usr/bin/caddy -plugins
-
-# Let's Encrypt Agreement
-ENV ACME_AGREE="false"
+RUN /usr/bin/caddy version
 
 # Ports, volumes, workdir
 EXPOSE 80 443 2015
