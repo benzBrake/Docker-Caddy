@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'php'
     tags:
       - v*
     paths-ignore:
