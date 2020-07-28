@@ -1,5 +1,5 @@
 # Docker-Caddy
-A Docker image for Caddy. This image includes `http.cache,http.filter,http.nobots,http.ratelimit,http.realip,tls.dns.cloudflare` plugins.
+A Docker image for Caddy. This image includes no plugins at default.
 
 Plugins can be configured via the `CADDY_PLUGIN` build arg.
 
@@ -20,34 +20,27 @@ Plugins can be configured via the `CADDY_PLUGIN` build arg.
 $ docker run -d -p 80:80 benzbrake/caddy
 ```
 Point your browser to `http://127.0.0.1:80`.
-## 2.Saving Certificates
+## 2.Run with custom config files
+
+Store config in directory `/data/vhosts`  and mount to container's folder `/www/config`, caddy will auto load your config files.
+
+```
+$ docker run -d -v /data/caddy:/data/caddy -v /data/vhosts:/www/config -p 80:80 -p 443:443 benzbrake/caddy
+```
+
+## 3.Saving Certificates
+
 Save certificates on host machine to prevent regeneration every time container starts.
 ```
-$ docker run -d -v /data/caddy:/data/caddy -v /etc/Caddyfile:/etc/Caddyfile -p 80:80 -p 443:443 benzbrake/caddy
-```
-Here, `$HOME/.caddy` is the location inside the container where caddy will save certificates.
-
-Additionally, you can use an environment variable to define the exact location caddy should save generated certificates:
-```
-$ docker run -d -e "CADDYPATH=/etc/caddy" -v /data/caddy:/etc/caddy -p 80:80 -p 443:443 benzbrake/caddy
-```
-Above, we utilize the CADDYPATH environment variable to define a different location inside the container for certificates to be stored. This is probably the safest option as it ensures any future docker image changes don't interfere with your ability to save certificates!
-## 3.Custom license
-If you purchased a commercial license, you must set your account ID and API key in build args:
-```
-docker build --build-arg \
-    CADDY_ACCOUNT_ID=... \
-    CADDY_API_KEY=... \
-    CADDY_LICENSE=commercial \
-    github.com/benzbrake/Docker-Caddy.git
+$ docker run -d -v /data/caddy:/root./caddy -p 80:80 -p 443:443 benzbrake/caddy
 ```
 ## 4.Custom plugins
 ```
 docker build --build-arg \
-	"CADDY_PLUGIN=http.cache,http.filter,http.nobots,http.ratelimit,http.realip" \
+	CADDY_PLUGIN="github.com/caddy-dns/cloudflare github.com/caddy-dns/dnspod" \
     github.com/benzbrake/Docker-Caddy.git
 ```
-## 6.php
+## 5.php
 
 `:php` variant of this image bundles PHP-FPM alongside essential php extensions.
 Default php running user is set to 1000:1000
@@ -58,8 +51,6 @@ Add thirdparty php extensions to php in container. Put your extensions to `/data
 $ docker run -d -v /data/php-extensions:/www/php-extensions -v /data/web:/www/wwwroot -v /data/vhosts:/www/config -p 80:80 -p 443:443 benzbrake/caddy:php
 ```
 
-## 6.Builder
-Builder is copy from [abiosoft/caddy-docker](https://github.com/abiosoft/caddy-docker).
 # Feedback
 
 If you have any problems with or questions about this image, please contact me through a GitHub [issue](https://github.com/benzBrake/Docker-Caddy/issues "issue").

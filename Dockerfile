@@ -27,4 +27,4 @@ VOLUME /root/.caddy /www
 WORKDIR /www
 
 ENTRYPOINT ["/usr/bin/caddy"]
-CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=true"]
+CMD ["run", "-config", "/etc/Caddyfile"]

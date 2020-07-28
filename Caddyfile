@@ -1,11 +1,11 @@
 :80 {
-        gzip
-        timeouts 0
-        root /www/wwwroot/default
-        index index.html index.htm default.html default.htm index.php
-        stdout
-        errors {
-            404 404.html
-        }
+    root * /www/wwwroot/default
+    file_server
+    log {
+        output stdout
+    }
+    handle_errors {
+	    rewrite * /{http.error.status_code}.html
+    }
 }
 import /www/config/*
