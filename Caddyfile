@@ -1,12 +1,12 @@
 :80 {
-        gzip
-        timeouts 0
-        root /www/wwwroot/default
-        index index.html index.htm default.html default.htm index.php
-        fastcgi / 127.0.0.1:9000 php
-        log /www/wwwlogs/default.log
-        errors {
-            404 404.html
-        }
+    root * /www/wwwroot/default
+    file_server
+    php_fastcgi 127.0.0.1:9000
+    log {
+        output stdout
+    }
+    handle_errors {
+	    rewrite * /{http.error.status_code}.html
+    }
 }
 import /www/config/*
