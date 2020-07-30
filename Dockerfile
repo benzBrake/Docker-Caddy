@@ -6,11 +6,8 @@ ARG CADDY_PLUGINS=""
 ADD builder.sh /
 RUN chmod +x /builder.sh && /builder.sh
 
-
 FROM benzbrake/alpine
 LABEL maintainer "Ryan Lieu <github-benzBrake@woai.ru>"
-
-
 
 # PHP PLUGINS
 ARG PHP_PLUGINS="php7-mysqli,php7-pdo_mysql,php7-mbstring,php7-json,php7-zlib,php7-gd,php7-intl,php7-session,php7-memcached,php7-ctype,php7-phar,php7-tokenizer"
@@ -47,9 +44,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 
 # Add a PHP www-user instead of nobody
 RUN addgroup -g ${PGID} www-user && \
-	adduser -D -H -u ${PUID} -G www-user www-user && \
-	sed -i "s|^user = .*|user = www-user|g" /etc/php7/php-fpm.d/www.conf && \
-	sed -i "s|^group = .*|group = www-user|g" /etc/php7/php-fpm.d/www.conf
+    adduser -D -H -u ${PUID} -G www-user www-user && \
+    sed -i "s|^user = .*|user = www-user|g" /etc/php7/php-fpm.d/www.conf && \
+    sed -i "s|^group = .*|group = www-user|g" /etc/php7/php-fpm.d/www.conf
 
 # Allow environment variable access
 RUN echo "clear_env = no" >> /etc/php7/php-fpm.conf
