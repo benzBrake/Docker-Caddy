@@ -28,7 +28,7 @@ go get -u github.com/caddyserver/xcaddy/cmd/xcaddy
 end_stage
 
 stage "building caddy using xcaddy"
-for plugin in "${CADDY_PLUGINS}"; do
+for plugin in ${CADDY_PLUGINS}; do
     [[ ! -z $plugin ]] && PLUGINS_OPTS="${PLUGINS_OPTS} --with ${plugin}"
 done
 echo CGO_ENABLED=0 xcaddy build ${VERSION} ${PLUGINS_OPTS}
