@@ -1,5 +1,5 @@
 #!/bin/sh
-VERSION=${VERSION:-"2.1.1"}
+VERSION=${VERSION:-"2.2.0"}
 IMPORT="github.com/caddyserver/caddy"
 
 # add `v` prefix for version numbers
