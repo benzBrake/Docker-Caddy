@@ -1,5 +1,6 @@
 #!/bin/sh
-VERSION=${VERSION:-"2.2.0"}
+_OLV=$(curl -s "https://github.com/caddyserver/caddy/releases/latest" | perl -e 'while($_=<>){ /\/tag\/(.*)\">redirected/; print $1;}')
+VERSION=${VERSION:-"${_OLV/v/}"}
 IMPORT="github.com/caddyserver/caddy"
 
 # add `v` prefix for version numbers
