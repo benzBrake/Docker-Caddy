@@ -1,10 +1,10 @@
 FROM golang:1.14-alpine as builder
 
 ARG CADDY_PLUGINS=""
-ARG CADDY_VERSION=2.2.0
+ARG CADDY_VERSION=""
 
 ADD builder.sh /
-RUN chmod +x /builder.sh && VERSION=${CADDY_VERSION} /builder.sh
+RUN chmod +x /builder.sh && CADDY_VERSION=${CADDY_VERSION} /builder.sh
 
 FROM benzbrake/alpine
 LABEL maintainer "Ryan Lieu <github-benzBrake@woai.ru>"
