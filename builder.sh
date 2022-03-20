@@ -1,8 +1,7 @@
 #!/bin/sh
-if [ ! -n ${CADDY_VERSION} ]; athen
+if [ ! -n ${CADDY_VERSION} ]; then
     _OLV=$(curl -s "https://github.com/caddyserver/caddy/releases/latest" | perl -e 'while($_=<>){ /\/tag\/(.*)\">redirected/; print $1;}')
     VERSION=${VERSION:-"${_OLV}"}
-    
 else
     VERSION=${CADDY_VERSION}
 fi
